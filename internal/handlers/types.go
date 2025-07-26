@@ -8,3 +8,5 @@ const (
 	ResourcePing        ResourceName = "resource://ping"
 	ResourceUserInfo    ResourceName = "resource://user-info"
 )
+
+type GetProjectsInput struct{}

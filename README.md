@@ -29,6 +29,7 @@ md .env.example .env
 
 ```env
 JIRA_API_URL=https://your-jira-api-url
+JIRA_USER=your-jira-email
 JIRA_TOKEN=your-jwt-token
 OPENAI_API_KEY=your-openai-key
 ```
@@ -50,8 +51,9 @@ make docker-build
                 "run",
                 "--rm",
                 "-i",
-                "-e", "TFS_TOKEN=your-token",
-                "-e", "TFS_API_URL=your-api-url",
+                "-e", "JIRA_TOKEN=your-token",
+                "-e", "JIRA_USER=your-jira-email",
+                "-e", "JIRA_API_URL=your-api-url",
                 "mcp-server",
                 "-t", "stdio"
             ]
@@ -65,8 +67,6 @@ make docker-build
 | Сервис          | Назначение                     |
 | --------------- | ------------------------------ |
 | `mcp-server`    | Основной MCP сервер            |
-| `mcpo`          | MCP-прокси (Claude/OpenRouter) |
-| `openwebui`     | Веб-интерфейс Open WebUI       |
 | `mcp-inspector` | UI-отладка prompts/tools       |
 
 ---
@@ -83,16 +83,6 @@ go run cmd/main.go
 ```bash
 go run cmd/main.go -t http
 ```
-
-## Описание работы с mcpo and web ui
-
-Взаимодействие: **MCP Server** → **MCPO** → **open web ui**
-
-Open web ui работает только в режиме **http**, из-за этого на данный момент mcpo может работать с MCP Server только в части вызова инструментов.
-Получение resources and prompts она не умеет.
-
-Самое нормальное поведение работы с MCP умеет только модель **GPT-4o**
-Не забудь включить function calling.
 ## 👤 Автор
 
 Владислав Зворыгин — [vladislav.zvorygin147@gmail.com](mailto\:vladislav.zvorygin147@gmail.com)

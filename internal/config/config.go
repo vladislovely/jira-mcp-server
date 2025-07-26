@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	JiraUser      string
 	JiraToken     string
 	JiraApiUrl    string
 	McpOutputPort string
@@ -25,6 +26,7 @@ func LoadConfig() Config {
 
 	cfg.JiraToken = GetEnv("JIRA_TOKEN", "")
 	cfg.JiraApiUrl = GetEnv("JIRA_API_URL", "")
+	cfg.JiraUser = GetEnv("JIRA_USER", "")
 	cfg.McpOutputPort = GetEnv("MCP_PORT", "")
 
 	return cfg

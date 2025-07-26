@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -49,14 +50,23 @@ func HandleVersionResource(
 }
 
 func HandleGetUserInfoResource(
-	_ context.Context,
+	ctx context.Context,
 	_ mcp.ReadResourceRequest,
 ) ([]mcp.ResourceContents, error) {
+	client := GetJiraClient()
+
+	userInfo, err := client.Me(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
 	var b strings.Builder
-	b.WriteString("Имя - Владислав Зворыгин\n")
-	b.WriteString("Логин - vladislove\n")
-	b.WriteString("Email - vladislav.zvorygin147@gmail.com\n")
-	b.WriteString("Role - Software Engineer\n")
+	b.WriteString(fmt.Sprintf("AccountID: %s\n", userInfo.AccountID))
+	b.WriteString(fmt.Sprintf("Пользователь: %s\n", userInfo.DisplayName))
+	b.WriteString(fmt.Sprintf("Email: %s\n", userInfo.EmailAddress))
+	b.WriteString(fmt.Sprintf("Timezone: %s\n", userInfo.TimeZone))
+	b.WriteString(fmt.Sprintf("Locale: %s\n", userInfo.Locale))
 
 	return []mcp.ResourceContents{
 		mcp.TextResourceContents{

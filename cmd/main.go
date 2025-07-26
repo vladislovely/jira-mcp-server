@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -40,6 +41,8 @@ func main() {
 	flag.Parse()
 
 	cfg := config.LoadConfig()
+
+	fmt.Printf("Transport: %s\n", transport)
 
 	mcpServer := NewMCPServer()
 

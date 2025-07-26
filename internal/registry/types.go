@@ -1,7 +1,12 @@
 package registry
 
+type ToolName string
 type PromptName string
 type ResourceName string
+
+const (
+	ToolGetProjects ToolName = "projects.list"
+)
 
 const (
 	PromptGetCurrentDate PromptName = "get_current_date"

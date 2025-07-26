@@ -38,7 +38,7 @@ func RegisterResources(mcpServer *server.MCPServer) {
 	mcpServer.AddResource(
 		mcp.NewResource(
 			string(ResourceUserInfo),
-			"Информация о текущем пользователе",
+			"Информация о пользователе",
 			mcp.WithMIMEType("text/plain"),
 		),
 		handlers.HandleGetUserInfoResource,

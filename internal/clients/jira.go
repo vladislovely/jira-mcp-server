@@ -32,6 +32,46 @@ func NewClient(baseURL, accessToken string) *Client {
 	}
 }
 
+func (c *Client) Me(
+	ctx context.Context,
+) (*MeAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/myself", c.BaseURL)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	var responseData MeAPIResponse
+	err := c.request(ctx, http.MethodGet, reqURL, nil, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+	}
+
+	return &responseData, nil
+}
+
+func (c *Client) GetProjects(
+	ctx context.Context,
+) (*GetProjectsAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/project", c.BaseURL)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	var entries []Project
+	err := c.request(ctx, http.MethodGet, reqURL, nil, &entries)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+	}
+
+	return &GetProjectsAPIResponse{Data: entries}, nil
+}
+
 func (c *Client) request(
 	ctx context.Context,
 	method string,
@@ -65,7 +105,7 @@ func (c *Client) request(
 		return fmt.Errorf("failed to create request: %w", requestErr)
 	}
 
-	req.Header.Set("Authorization", "Bearer "+c.AccessToken)
+	req.Header.Set("Authorization", "Basic "+c.AccessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 

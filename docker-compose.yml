@@ -4,36 +4,4 @@ services:
     image: mcp-server
     container_name: mcp-server
     restart: unless-stopped
-    command: ["-t", "stdio"]
-    ports:
-      - "${MCP_PORT}"
-    environment:
-      JIRA_API_URL: ${JIRA_API_URL}
-      JIRA_TOKEN: ${JIRA_TOKEN}
-      MCP_PORT: ${MCP_PORT}
-    networks:
-      - app
-  
-  mcp-inspector:
-    image: vladislove2k/mcp-inspector:0.16
-    container_name: mcp-inspector
-    restart: unless-stopped
-    environment:
-      DANGEROUSLY_OMIT_AUTH: true
-    ports:
-      - "6274:6274"
-      - "6277:6277"
-    depends_on:
-      - mcp-server
-    networks:
-      - app
-
-volumes:
-  ollama:
-    driver: local
-  open-webui:
-    driver: local
-
-networks:
-  app:
-    driver: bridge
+    command: [ "-t", "stdio" ]

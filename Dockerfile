@@ -33,6 +33,4 @@ RUN apt-get update && apt-get install -y ca-certificates
 COPY --from=builder /bin/app /app
 COPY --from=builder /src/.env ./
 
-EXPOSE 8080
-
 ENTRYPOINT ["/app"]
