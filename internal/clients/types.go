@@ -28,7 +28,7 @@ type MeAPIResponse struct {
 type Project struct {
 	Expand     string `json:"expand"`
 	Self       string `json:"self"`
-	Id         string `json:"id"`
+	ID         string `json:"id"`
 	Key        string `json:"key"`
 	Name       string `json:"name"`
 	AvatarUrls struct {
@@ -42,10 +42,37 @@ type Project struct {
 	Style          string   `json:"style"`
 	IsPrivate      bool     `json:"isPrivate"`
 	Properties     struct{} `json:"properties"`
-	EntityId       string   `json:"entityId"`
-	Uuid           string   `json:"uuid"`
+	EntityID       string   `json:"entityId"`
+	UUID           string   `json:"uuid"`
 }
 
 type GetProjectsAPIResponse struct {
 	Data []Project
+}
+
+type CreateProject struct {
+	AssigneeType       string `json:"assigneeType"`
+	Description        string `json:"description"`
+	Key                string `json:"key"`
+	LeadAccountID      string `json:"leadAccountId"`
+	Name               string `json:"name"`
+	PermissionScheme   int    `json:"permissionScheme"`
+	ProjectTemplateKey string `json:"projectTemplateKey"`
+	ProjectTypeKey     string `json:"projectTypeKey"`
+}
+
+type CreateProjectAPIResponse struct {
+	Self string `json:"self"`
+	ID   int    `json:"id"`
+	Key  string `json:"key"`
+}
+
+type CreateProjectInput struct {
+	AccountID          string
+	AssigneeType       string
+	Name               string
+	Description        string
+	TaskPrefixKey      string
+	ProjectTypeKey     string
+	ProjectTemplateKey string
 }

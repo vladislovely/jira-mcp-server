@@ -3,7 +3,6 @@ package clients
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,14 +19,10 @@ type Client struct {
 }
 
 func NewClient(baseURL, accessToken string) *Client {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-
 	return &Client{
 		BaseURL:     baseURL,
 		AccessToken: accessToken,
-		httpClient:  &http.Client{Transport: tr},
+		httpClient:  &http.Client{},
 		logger:      slog.Default().With("component", "jira-client"),
 	}
 }
@@ -47,6 +42,8 @@ func (c *Client) Me(
 
 	if err != nil {
 		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
 	}
 
 	return &responseData, nil
@@ -67,9 +64,45 @@ func (c *Client) GetProjects(
 
 	if err != nil {
 		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
 	}
 
 	return &GetProjectsAPIResponse{Data: entries}, nil
+}
+
+func (c *Client) CreateProject(
+	ctx context.Context,
+	input CreateProjectInput,
+) (*CreateProjectAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/project", c.BaseURL)
+
+	project := &CreateProject{
+		LeadAccountID:      input.AccountID,
+		AssigneeType:       input.AssigneeType,
+		Name:               input.Name,
+		Description:        input.Description,
+		Key:                input.TaskPrefixKey,
+		ProjectTypeKey:     input.ProjectTypeKey,
+		ProjectTemplateKey: input.ProjectTemplateKey,
+		PermissionScheme:   0,
+	}
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	var responseData CreateProjectAPIResponse
+	err := c.request(ctx, http.MethodPost, reqURL, &project, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
 }
 
 func (c *Client) request(
@@ -120,7 +153,8 @@ func (c *Client) request(
 		}
 	}()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated &&
+		resp.StatusCode != http.StatusNoContent {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("unexpected status %d, body: %s", resp.StatusCode, string(body))
 	}
