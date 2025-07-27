@@ -28,11 +28,11 @@ jobs:
       
       - name: Build Docker image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/mcp-server
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/jira-mcp-server
           docker build -t $IMAGE_NAME:${{ steps.vars.outputs.version }} -t $IMAGE_NAME:latest .
       
       - name: Push Docker image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/mcp-server
+          IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/jira-mcp-server
           docker push $IMAGE_NAME:${{ steps.vars.outputs.version }}
           docker push $IMAGE_NAME:latest
