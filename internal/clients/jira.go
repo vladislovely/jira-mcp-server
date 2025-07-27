@@ -59,6 +59,10 @@ func (c *Client) GetProjects(
 		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
 	}
 
+	q := reqURL.Query()
+	q.Set("expand", "description,projectKeys,lead")
+	reqURL.RawQuery = q.Encode()
+
 	var entries []Project
 	err := c.request(ctx, http.MethodGet, reqURL, nil, &entries)
 
@@ -95,6 +99,52 @@ func (c *Client) CreateProject(
 
 	var responseData CreateProjectAPIResponse
 	err := c.request(ctx, http.MethodPost, reqURL, &project, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
+}
+
+func (c *Client) ArchiveProject(
+	ctx context.Context,
+	input ArchiveProjectInput,
+) (*ArchiveProjectAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/project/%s/archive", c.BaseURL, input.ProjectIDOrKey)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	var responseData ArchiveProjectAPIResponse
+	err := c.request(ctx, http.MethodPost, reqURL, nil, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
+}
+
+func (c *Client) RestoreProject(
+	ctx context.Context,
+	input RestoreProjectInput,
+) (*RestoreProjectAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/project/%s/restore", c.BaseURL, input.ProjectIDOrKey)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	var responseData RestoreProjectAPIResponse
+	err := c.request(ctx, http.MethodPost, reqURL, nil, &responseData)
 
 	if err != nil {
 		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
@@ -157,6 +207,10 @@ func (c *Client) request(
 		resp.StatusCode != http.StatusNoContent {
 		body, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("unexpected status %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	if resp.StatusCode == http.StatusNoContent {
+		return nil
 	}
 
 	if out != nil {

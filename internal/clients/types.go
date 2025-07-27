@@ -26,17 +26,31 @@ type MeAPIResponse struct {
 }
 
 type Project struct {
-	Expand     string `json:"expand"`
-	Self       string `json:"self"`
-	ID         string `json:"id"`
-	Key        string `json:"key"`
-	Name       string `json:"name"`
-	AvatarUrls struct {
+	Expand      string `json:"expand"`
+	Self        string `json:"self"`
+	ID          string `json:"id"`
+	Key         string `json:"key"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	AvatarURLs  struct {
 		X48 string `json:"48x48"`
 		X24 string `json:"24x24"`
 		X16 string `json:"16x16"`
 		X32 string `json:"32x32"`
 	} `json:"avatarUrls"`
+	Lead struct {
+		Self        string `json:"self"`
+		AccountID   string `json:"accountId"`
+		AccountType string `json:"accountType"`
+		AvatarURLs  struct {
+			X48 string `json:"48x48"`
+			X24 string `json:"24x24"`
+			X16 string `json:"16x16"`
+			X32 string `json:"32x32"`
+		} `json:"avatarUrls"`
+		DisplayName string `json:"displayName"`
+		Active      bool   `json:"active"`
+	} `json:"lead"`
 	ProjectTypeKey string   `json:"projectTypeKey"`
 	Simplified     bool     `json:"simplified"`
 	Style          string   `json:"style"`
@@ -44,6 +58,20 @@ type Project struct {
 	Properties     struct{} `json:"properties"`
 	EntityID       string   `json:"entityId"`
 	UUID           string   `json:"uuid"`
+	Archived       bool     `json:"archived"`
+	ArchivedDate   string   `json:"archivedDate"`
+	ArchivedBy     struct {
+		Self       string `json:"self"`
+		AccountID  string `json:"accountId"`
+		AvatarURLs struct {
+			X48 string `json:"48x48"`
+			X24 string `json:"24x24"`
+			X16 string `json:"16x16"`
+			X32 string `json:"32x32"`
+		} `json:"avatarUrls"`
+		DisplayName string `json:"displayName"`
+		Active      bool   `json:"active"`
+	} `json:"archivedBy"`
 }
 
 type GetProjectsAPIResponse struct {
@@ -75,4 +103,18 @@ type CreateProjectInput struct {
 	TaskPrefixKey      string
 	ProjectTypeKey     string
 	ProjectTemplateKey string
+}
+
+type ArchiveProjectInput struct {
+	ProjectIDOrKey string
+}
+
+type RestoreProjectInput struct {
+	ProjectIDOrKey string
+}
+
+type ArchiveProjectAPIResponse struct{}
+
+type RestoreProjectAPIResponse struct {
+	Project
 }

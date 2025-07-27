@@ -20,3 +20,11 @@ type CreateProjectInput struct {
 	ProjectType    string `json:"project_type"     validate:"required_if=ProjectTypeKey software,omitempty,oneof=kanban scrum"`
 	ProjectTypeKey string `json:"project_type_key" validate:"required,oneof=business software"`
 }
+
+type ArchiveProjectInput struct {
+	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
+}
+
+type RestoreProjectInput struct {
+	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
+}

@@ -8,6 +8,9 @@ import (
 )
 
 func RegisterTools(mcpServer *server.MCPServer) {
+	const minTaskKeyLength = 2
+	const maxTaskKeyLength = 10
+
 	mcpServer.AddTool(
 		mcp.NewTool(
 			string(ToolGetProjects),
@@ -55,6 +58,8 @@ func RegisterTools(mcpServer *server.MCPServer) {
 				mcp.Description(
 					"Ключ проекта (2–10 латинских букв). Будет префиксом задач, например EX-1.",
 				),
+				mcp.MinLength(minTaskKeyLength),
+				mcp.MaxLength(maxTaskKeyLength),
 			),
 			mcp.WithString(
 				"project_type",
@@ -70,5 +75,37 @@ func RegisterTools(mcpServer *server.MCPServer) {
 				mcp.Description("Тип проекта: business, service_desk или software."),
 			),
 		), mcp.NewTypedToolHandler(handlers.HandleCreateProjectTool),
+	)
+
+	mcpServer.AddTool(
+		mcp.NewTool(
+			string(ToolArchiveProject),
+			mcp.WithDescription(
+				"Архивировать проект. Используй этот инструмент только для архивации реальных проектов.",
+			),
+			mcp.WithString(
+				"project_id_or_key",
+				mcp.Required(),
+				mcp.Description(
+					"ID или ключ проекта, который нужно архивировать. Бери только из ответа инструмента projects.list.",
+				),
+			),
+		), mcp.NewTypedToolHandler(handlers.HandleArchiveProjectTool),
+	)
+
+	mcpServer.AddTool(
+		mcp.NewTool(
+			string(ToolRestoreProject),
+			mcp.WithDescription(
+				"Восстановить архивированный или удаленный проект. Используй этот инструмент только для восстановления реальных проектов.",
+			),
+			mcp.WithString(
+				"project_id_or_key",
+				mcp.Required(),
+				mcp.Description(
+					"ID или ключ проекта, который нужно восстановить. Бери только из ответа инструмента projects.list.",
+				),
+			),
+		), mcp.NewTypedToolHandler(handlers.HandleRestoreProjectTool),
 	)
 }

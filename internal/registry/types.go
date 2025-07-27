@@ -5,8 +5,10 @@ type PromptName string
 type ResourceName string
 
 const (
-	ToolGetProjects   ToolName = "project.list"
-	ToolCreateProject ToolName = "project.create"
+	ToolGetProjects    ToolName = "project.list"
+	ToolCreateProject  ToolName = "project.create"
+	ToolArchiveProject ToolName = "project.archive"
+	ToolRestoreProject ToolName = "project.restore"
 )
 
 const (
