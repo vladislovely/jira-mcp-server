@@ -3,7 +3,7 @@
 
 APP_NAME := mcp-server
 DOCKER_IMAGE := vladislove2k/jira-mcp-server:latest
-
+DOCKET_TAG := v0.0.2
 .PHONY: build docker-build docker-push docker-push compose-up compose-down clean
 
 # Локальная сборка Go-приложения (без Docker).
@@ -41,3 +41,7 @@ lint:
 
 compose-update:
 	$(MAKE) compose-down && docker compose pull openwebui mcpo && docker compose build $(APP_NAME) && $(MAKE) compose-up
+
+git-tag-and-push:
+	git tag $(DOCKET_TAG)
+	git push origin $(DOCKET_TAG)
