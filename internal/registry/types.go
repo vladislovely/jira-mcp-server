@@ -8,6 +8,7 @@ const (
 	ToolGetProjects    ToolName = "project.list"
 	ToolCreateProject  ToolName = "project.create"
 	ToolArchiveProject ToolName = "project.archive"
+	ToolDeleteProject  ToolName = "project.delete"
 	ToolRestoreProject ToolName = "project.restore"
 )
 

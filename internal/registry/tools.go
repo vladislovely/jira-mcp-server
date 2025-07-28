@@ -95,9 +95,25 @@ func RegisterTools(mcpServer *server.MCPServer) {
 
 	mcpServer.AddTool(
 		mcp.NewTool(
+			string(ToolDeleteProject),
+			mcp.WithDescription(
+				"Удалить проект. Проект удаляется не полностью его можно будет восстановить. Используй этот инструмент только для удаления реальных проектов.",
+			),
+			mcp.WithString(
+				"project_id_or_key",
+				mcp.Required(),
+				mcp.Description(
+					"ID или ключ проекта, который нужно удалить. Бери только из ответа инструмента projects.list.",
+				),
+			),
+		), mcp.NewTypedToolHandler(handlers.HandleDeleteProjectTool),
+	)
+
+	mcpServer.AddTool(
+		mcp.NewTool(
 			string(ToolRestoreProject),
 			mcp.WithDescription(
-				"Восстановить архивированный или удаленный проект. Используй этот инструмент только для восстановления реальных проектов.",
+				"Восстановить архивированный проект. Используй этот инструмент только для восстановления реальных проектов.",
 			),
 			mcp.WithString(
 				"project_id_or_key",

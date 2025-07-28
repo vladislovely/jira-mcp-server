@@ -25,6 +25,10 @@ type ArchiveProjectInput struct {
 	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
 }
 
+type DeleteProjectInput struct {
+	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
+}
+
 type RestoreProjectInput struct {
 	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
 }

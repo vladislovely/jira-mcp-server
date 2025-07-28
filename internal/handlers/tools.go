@@ -178,6 +178,42 @@ func HandleArchiveProjectTool(
 	), nil
 }
 
+func HandleDeleteProjectTool(
+	ctx context.Context,
+	_ mcp.CallToolRequest,
+	input DeleteProjectInput,
+) (*mcp.CallToolResult, error) {
+	var validate = validator.New()
+
+	if result := customValidator.ValidateInput(validate, input); result != nil {
+		return result, nil
+	}
+
+	client := GetJiraClient()
+
+	logger := slog.Default().With("component", "HandleDeleteProjectTool")
+
+	logger.InfoContext(ctx, "Удаления проекта")
+
+	project, err := client.DeleteProject(ctx, clients.DeleteProjectInput(input))
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf(
+				"❌ Ошибка при архивации проекта.\nОшибка: %v",
+				err,
+			),
+		), nil
+	}
+
+	if project != nil {
+		return mcp.NewToolResultText("✅ Проект успешно удален"), nil
+	}
+
+	return mcp.NewToolResultError(
+		"❌ Ошибка при удалении проекта.",
+	), nil
+}
+
 func HandleRestoreProjectTool(
 	ctx context.Context,
 	_ mcp.CallToolRequest,

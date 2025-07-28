@@ -109,6 +109,10 @@ type ArchiveProjectInput struct {
 	ProjectIDOrKey string
 }
 
+type DeleteProjectInput struct {
+	ProjectIDOrKey string
+}
+
 type RestoreProjectInput struct {
 	ProjectIDOrKey string
 }
@@ -118,3 +122,5 @@ type ArchiveProjectAPIResponse struct{}
 type RestoreProjectAPIResponse struct {
 	Project
 }
+
+type DeleteProjectAPIResponse struct{}

@@ -132,6 +132,33 @@ func (c *Client) ArchiveProject(
 	return &responseData, nil
 }
 
+func (c *Client) DeleteProject(
+	ctx context.Context,
+	input DeleteProjectInput,
+) (*DeleteProjectAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/project/%s", c.BaseURL, input.ProjectIDOrKey)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+
+	q := reqURL.Query()
+	q.Set("enableUndo", "true")
+	reqURL.RawQuery = q.Encode()
+
+	var responseData DeleteProjectAPIResponse
+	err := c.request(ctx, http.MethodDelete, reqURL, nil, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
+}
+
 func (c *Client) RestoreProject(
 	ctx context.Context,
 	input RestoreProjectInput,
