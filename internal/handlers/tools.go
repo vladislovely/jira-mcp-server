@@ -278,3 +278,120 @@ func HandleRestoreProjectTool(
 
 	return mcp.NewToolResultText(b.String()), nil
 }
+
+func HandleIssueFieldsTool(
+	ctx context.Context,
+	_ mcp.CallToolRequest,
+	input IssueFieldsInput,
+) (*mcp.CallToolResult, error) {
+	var validate = validator.New()
+
+	if result := customValidator.ValidateInput(validate, input); result != nil {
+		return result, nil
+	}
+
+	client := GetJiraClient()
+
+	logger := slog.Default().With("component", "HandleIssueFieldsTool")
+
+	logger.InfoContext(ctx, "Получение список доступных полей для создания задачи")
+
+	response, err := client.IssueFields(ctx, clients.IssueFieldsInput(input))
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf(
+				"❌ Ошибка при получении доступных полей.\nОшибка: %v",
+				err,
+			),
+		), nil
+	}
+
+	p := response.Projects[0]
+
+	var b strings.Builder
+	b.WriteString(fmt.Sprintf("📌 Проект: %s (%s)\n\n", p.Name, p.Key))
+
+	for _, it := range p.IssueTypes {
+		b.WriteString(fmt.Sprintf("Тип задачи: %s\n", it.Name))
+		for key, f := range it.Fields {
+			b.WriteString(fmt.Sprintf("  - %s (key: %s)\n", f.Name, key))
+			b.WriteString(fmt.Sprintf("    Обязательное: %t\n", f.Required))
+			b.WriteString(fmt.Sprintf("    По умолчанию: %t\n", f.HasDefaultValue))
+
+			if len(f.AllowedValues) > 0 {
+				var values []string
+				for _, v := range f.AllowedValues {
+					if m, ok := v.(map[string]interface{}); ok {
+						var item string
+						if name, exists := m["name"].(string); exists {
+							item = name
+						}
+						if id, exists := m["id"].(string); exists {
+							if item != "" {
+								item = fmt.Sprintf("%s (ID: %s)", item, id)
+							} else {
+								item = fmt.Sprintf("ID: %s", id)
+							}
+						}
+						if item != "" {
+							values = append(values, item)
+						}
+					}
+				}
+				if len(values) > 0 {
+					b.WriteString(fmt.Sprintf("    Допустимые значения: %s\n", strings.Join(values, ", ")))
+				}
+			}
+
+			if len(f.Operations) > 0 {
+				b.WriteString(fmt.Sprintf("    Операции: %s\n", strings.Join(f.Operations, ", ")))
+			}
+
+			b.WriteString("\n")
+		}
+		b.WriteString("\n")
+	}
+
+	return mcp.NewToolResultText(b.String()), nil
+}
+
+func HandleIssueTypesTool(
+	ctx context.Context,
+	_ mcp.CallToolRequest,
+	input IssueTypesInput,
+) (*mcp.CallToolResult, error) {
+	var validate = validator.New()
+
+	if result := customValidator.ValidateInput(validate, input); result != nil {
+		return result, nil
+	}
+
+	client := GetJiraClient()
+
+	logger := slog.Default().With("component", "HandleIssueTypesTool")
+
+	logger.InfoContext(ctx, "Получение список доступных типов задач")
+
+	response, err := client.IssueTypes(ctx, clients.IssueTypesInput(input))
+	if err != nil {
+		return mcp.NewToolResultError(
+			fmt.Sprintf(
+				"❌ Ошибка при получении доступных типов задач.\nОшибка: %v",
+				err,
+			),
+		), nil
+	}
+
+	var b strings.Builder
+	for _, t := range response.IssueTypes {
+		b.WriteString(fmt.Sprintf("Название: %s\n", t.Name))
+		b.WriteString(fmt.Sprintf("ID: %s\n", t.ID))
+		if t.Description != "" {
+			b.WriteString(fmt.Sprintf("Описание: %s\n", t.Description))
+		}
+		b.WriteString(fmt.Sprintf("Sub-task: %t\n", t.Subtask))
+		b.WriteString("\n")
+	}
+
+	return mcp.NewToolResultText(b.String()), nil
+}

@@ -10,6 +10,9 @@ const (
 	ToolArchiveProject ToolName = "project.archive"
 	ToolDeleteProject  ToolName = "project.delete"
 	ToolRestoreProject ToolName = "project.restore"
+
+	ToolAvailableIssueFields ToolName = "issue.available-fields"
+	ToolAvailableIssueTypes  ToolName = "issue.available-types"
 )
 
 const (

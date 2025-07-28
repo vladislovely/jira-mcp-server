@@ -182,6 +182,60 @@ func (c *Client) RestoreProject(
 	return &responseData, nil
 }
 
+func (c *Client) IssueFields(
+	ctx context.Context,
+	input IssueFieldsInput,
+) (*IssueFieldsAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/issue/createmeta", c.BaseURL)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+	q := reqURL.Query()
+	q.Set("projectKeys", input.ProjectKey)
+	q.Set("expand", "projects.issuetypes.fields")
+	reqURL.RawQuery = q.Encode()
+
+	var responseData IssueFieldsAPIResponse
+	err := c.request(ctx, http.MethodGet, reqURL, nil, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
+}
+
+func (c *Client) IssueTypes(
+	ctx context.Context,
+	input IssueTypesInput,
+) (*IssueTypesAPIResponse, error) {
+	endpoint := fmt.Sprintf("%s/issue/createmeta/%s/issuetypes", c.BaseURL, input.ProjectIDOrKey)
+
+	reqURL, parseErr := url.Parse(endpoint)
+	if parseErr != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", parseErr)
+	}
+	q := reqURL.Query()
+	q.Set("startAt", "0")
+	q.Set("maxResults", "50")
+	reqURL.RawQuery = q.Encode()
+
+	var responseData IssueTypesAPIResponse
+	err := c.request(ctx, http.MethodGet, reqURL, nil, &responseData)
+
+	if err != nil {
+		c.logger.ErrorContext(ctx, "request failed", slog.Any("error", err))
+
+		return nil, err
+	}
+
+	return &responseData, nil
+}
+
 func (c *Client) request(
 	ctx context.Context,
 	method string,

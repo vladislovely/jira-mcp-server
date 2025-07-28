@@ -117,6 +117,14 @@ type RestoreProjectInput struct {
 	ProjectIDOrKey string
 }
 
+type IssueFieldsInput struct {
+	ProjectKey string
+}
+
+type IssueTypesInput struct {
+	ProjectIDOrKey string
+}
+
 type ArchiveProjectAPIResponse struct{}
 
 type RestoreProjectAPIResponse struct {
@@ -124,3 +132,36 @@ type RestoreProjectAPIResponse struct {
 }
 
 type DeleteProjectAPIResponse struct{}
+
+type IssueFieldsAPIResponse struct {
+	Projects []struct {
+		Key        string `json:"key"`
+		Name       string `json:"name"`
+		IssueTypes []struct {
+			ID     string `json:"id"`
+			Name   string `json:"name"`
+			Fields map[string]struct {
+				Required        bool          `json:"required"`
+				Name            string        `json:"name"`
+				Key             string        `json:"key"`
+				HasDefaultValue bool          `json:"hasDefaultValue"`
+				Operations      []string      `json:"operations"`
+				AllowedValues   []interface{} `json:"allowedValues"`
+			} `json:"fields"`
+		} `json:"issuetypes"`
+	} `json:"projects"`
+}
+
+type IssueTypesAPIResponse struct {
+	IssueTypes []struct {
+		Description string `json:"description"`
+		IconURL     string `json:"iconUrl"`
+		ID          string `json:"id"`
+		Name        string `json:"name"`
+		Self        string `json:"self"`
+		Subtask     bool   `json:"subtask"`
+	} `json:"issueTypes"`
+	MaxResults int `json:"maxResults"`
+	StartAt    int `json:"startAt"`
+	Total      int `json:"total"`
+}

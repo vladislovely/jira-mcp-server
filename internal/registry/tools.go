@@ -124,4 +124,36 @@ func RegisterTools(mcpServer *server.MCPServer) {
 			),
 		), mcp.NewTypedToolHandler(handlers.HandleRestoreProjectTool),
 	)
+
+	mcpServer.AddTool(
+		mcp.NewTool(
+			string(ToolAvailableIssueFields),
+			mcp.WithDescription(
+				"Получить список доступных полей для создания задачи. Используй этот инструмент только для получения реальных полей для создания задачи.",
+			),
+			mcp.WithString(
+				"project_key",
+				mcp.Required(),
+				mcp.Description(
+					"Ключ проекта, по которому нужно найти список доступных полей.",
+				),
+			),
+		), mcp.NewTypedToolHandler(handlers.HandleIssueFieldsTool),
+	)
+
+	mcpServer.AddTool(
+		mcp.NewTool(
+			string(ToolAvailableIssueTypes),
+			mcp.WithDescription(
+				"Получить список доступных типов для создания задачи. Используй этот инструмент только для получения реальных типов для создания задачи.",
+			),
+			mcp.WithString(
+				"project_id_or_key",
+				mcp.Required(),
+				mcp.Description(
+					"ID или ключ проекта, по которому нужно получить список доступных типов задач.",
+				),
+			),
+		), mcp.NewTypedToolHandler(handlers.HandleIssueTypesTool),
+	)
 }

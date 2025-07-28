@@ -32,3 +32,11 @@ type DeleteProjectInput struct {
 type RestoreProjectInput struct {
 	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
 }
+
+type IssueFieldsInput struct {
+	ProjectKey string `json:"project_key" validate:"required"`
+}
+
+type IssueTypesInput struct {
+	ProjectIDOrKey string `json:"project_id_or_key" validate:"required"`
+}
